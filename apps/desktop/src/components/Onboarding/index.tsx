@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { SHORTCUT_TOUR_FIRST_STEP, useAppStore } from '../../stores/appStore'
 import {
@@ -64,6 +64,7 @@ const ROLE_TITLE: Record<ShortcutRole, { title: string; subtitle: string }> = {
 
 export function Onboarding() {
   const { t } = useTranslation()
+  const reducedMotion = useReducedMotion()
   const step = useAppStore((s) => s.onboardingStep)
   const setStep = useAppStore((s) => s.setOnboardingStep)
   const setOnboardingCompleted = useAppStore((s) => s.setOnboardingCompleted)
@@ -280,9 +281,9 @@ export function Onboarding() {
         <motion.div
           key={step}
           variants={slideRight}
-          initial="initial"
+          initial={reducedMotion ? false : 'initial'}
           animate="animate"
-          exit="exit"
+          exit={reducedMotion ? undefined : 'exit'}
           transition={{ duration: 0.2 }}
         >
           {step === 0 && <WelcomeStep permissions={permissions} onSkip={() => goTo(1)} />}

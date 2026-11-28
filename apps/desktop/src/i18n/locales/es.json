@@ -295,7 +295,7 @@
     "saveFailed": "No se pudo guardar: {{error}}",
     "retry": "Reintentar",
     "steps": {
-      "welcome": "Bienvenida",
+      "welcome": "Te damos la bienvenida a {{appName}}",
       "welcomeSub": "Permite micrófono, atajos y pegado",
       "microphone": "Entrada de voz",
       "microphoneSub": "Elige tu micrófono",

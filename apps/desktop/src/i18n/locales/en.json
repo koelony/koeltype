@@ -295,7 +295,7 @@
     "saveFailed": "Could not save: {{error}}",
     "retry": "Retry",
     "steps": {
-      "welcome": "Welcome",
+      "welcome": "Welcome to {{appName}}",
       "welcomeSub": "Allow microphone, shortcuts and paste",
       "microphone": "Voice input",
       "microphoneSub": "Choose your microphone",

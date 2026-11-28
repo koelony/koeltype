@@ -232,11 +232,41 @@ body,
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 18%, transparent);
   }
 
-  .onboarding-koel {
-    --koel-bird-width: 72px;
-    display: flex;
-    justify-content: center;
-    margin: -10px 0 4px;
+  /* The sky belongs to the window, so step changes leave the birds in flight. */
+  .onboarding-surface .home-scenery {
+    background: radial-gradient(
+      ellipse at 96% 76%,
+      color-mix(in srgb, var(--koel-soft) 11%, transparent),
+      transparent 56%
+    );
+  }
+  .onboarding-app-icon {
+    display: block;
+    margin: 0 auto 7px;
+  }
+  .onboarding-block {
+    padding-block: 12px 16px;
+  }
+  .onboarding-heading {
+    padding-bottom: 22px;
+  }
+  .onboarding-footer {
+    padding-block: 16px;
+  }
+  @media (max-height: 560px) {
+    .onboarding-app-icon {
+      width: 52px;
+      height: 52px;
+    }
+    .onboarding-block {
+      padding-block: 8px 12px;
+    }
+    .onboarding-heading {
+      padding-bottom: 12px;
+    }
+    .onboarding-footer {
+      padding-block: 10px;
+    }
   }
 
   /* ─── Page type ─── */
@@ -678,22 +708,23 @@ body,
 
   /* ─── Speech setup (plan `two-tab-speech`, docs/plans/2026-09-25-two-tab-speech/mock.html) ─── */
 
-  /* The onboarding Built-in card: one fixed height for every state, so text never moves. */
-  /* Plan `language-model-suggestions`: the card is taller when three models are listed, and keeps
-     that height in every state. */
-  .setup-card.setup-card-tall {
-    height: 318px;
-  }
+  /* The action row follows the model list in the onboarding page's scroll area. */
   .setup-card {
     display: flex;
-    height: 236px;
     flex-direction: column;
-    justify-content: space-between;
     gap: 12px;
-    padding: 18px;
+    padding: 16px;
     border-radius: 12px;
     background: var(--color-bg-elevated);
     box-shadow: 0 0 0 0.5px var(--color-border);
+  }
+  .setup-card[data-engine='ai'] {
+    min-height: 236px;
+  }
+  @media (min-width: 640px) {
+    .setup-card[data-engine='speech'] .option-cards-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   /* Plan `searxng-setup`: the Built-in search card (Settings → Search, onboarding). */
   .search-setup-card {
@@ -913,7 +944,7 @@ body,
     font-size: 11.5px;
     color: var(--color-text-secondary);
   }
-  .option-card[aria-checked='true'] {
+  .option-card:is([aria-checked='true'], [aria-selected='true']) {
     background: var(--color-accent-light);
     box-shadow: 0 0 0 2px var(--color-accent);
   }

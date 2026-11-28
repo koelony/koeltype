@@ -295,7 +295,7 @@
     "saveFailed": "Konnte nicht speichern: {{error}}",
     "retry": "Erneut versuchen",
     "steps": {
-      "welcome": "Willkommen",
+      "welcome": "Willkommen bei {{appName}}",
       "welcomeSub": "Mikrofon, Kurzbefehle und Einfügen erlauben",
       "microphone": "Spracheingabe",
       "microphoneSub": "Wähle dein Mikrofon",

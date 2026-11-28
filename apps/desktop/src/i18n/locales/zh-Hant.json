@@ -295,7 +295,7 @@
     "saveFailed": "無法儲存：{{error}}",
     "retry": "重試",
     "steps": {
-      "welcome": "歡迎",
+      "welcome": "歡迎使用 {{appName}}",
       "welcomeSub": "允許麥克風、快捷鍵和貼上",
       "microphone": "語音輸入",
       "microphoneSub": "選擇你的麥克風",

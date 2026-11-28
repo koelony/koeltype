@@ -21,16 +21,25 @@ const ADD = '__add__'
  * line, and "Delete this preset". With none: "Add your server or API key" and the empty form.
  * ("Learn more" sits on the page's "… uses" header.)
  */
-export function ServerSettings({ service = SPEECH_SERVICE }: { service?: EngineService }) {
+export function ServerSettings({
+  service = SPEECH_SERVICE,
+  onboarding = false,
+}: {
+  service?: EngineService
+  onboarding?: boolean
+}) {
   const { t } = useTranslation()
   const config = useAppStore((s) => s.config)
   const saved = serverPresetsOf(service, config)
   const [adding, setAdding] = useState(false)
+  const [pickedId, setPickedId] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const activeId = activePresetOf(service, config)?.id
-  const selected = saved.find((preset) => preset.id === activeId) ?? saved[0] ?? null
+  // In onboarding, browsing a saved preset leaves the current connection in use until Save.
+  const selectedId = onboarding ? (pickedId ?? activeId) : activeId
+  const selected = saved.find((preset) => preset.id === selectedId) ?? saved[0] ?? null
   const showForm = adding || selected === null ? null : selected
 
   const run = (action: Promise<void>) =>
@@ -46,7 +55,8 @@ export function ServerSettings({ service = SPEECH_SERVICE }: { service?: EngineS
       return
     }
     setAdding(false)
-    void run(selectPreset(service, value))
+    if (onboarding) setPickedId(value)
+    else void run(selectPreset(service, value))
   }
 
   const handleDelete = () => {
@@ -91,10 +101,21 @@ export function ServerSettings({ service = SPEECH_SERVICE }: { service?: EngineS
           key={showForm?.id ?? 'new'}
           service={service}
           preset={showForm}
-          saveLabel={t('speech.save')}
-          onSaved={() => setAdding(false)}
+          saveLabel={t(onboarding ? 'speech.saveAndUse' : 'speech.save')}
+          onSaved={(preset) => {
+            if (onboarding) setPickedId(preset.id)
+            setAdding(false)
+          }}
           secondary={
-            showForm ? (
+            onboarding && adding ? (
+              <button
+                type="button"
+                onClick={() => setAdding(false)}
+                className="link-button link-button-muted"
+              >
+                {t('speech.backToSaved')}
+              </button>
+            ) : !onboarding && showForm ? (
               <button
                 type="button"
                 onClick={handleDelete}
@@ -110,7 +131,7 @@ export function ServerSettings({ service = SPEECH_SERVICE }: { service?: EngineS
       </div>
 
       {/* Plan `preset-sharing`: export and import speech or AI presets. */}
-      <PresetShareButtons service={service.id} />
+      {!onboarding && <PresetShareButtons service={service.id} />}
     </div>
   )
 }

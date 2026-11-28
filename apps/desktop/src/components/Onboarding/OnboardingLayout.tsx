@@ -1,6 +1,7 @@
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { KoelBird } from '../../brand/KoelArtwork'
+import appIcon from '../../../src-tauri/icons/app-icon.svg'
+import { HomeScenery } from '../HomePage/HomeScenery'
 import { StepIndicator } from './StepIndicator'
 
 interface Props {
@@ -50,7 +51,8 @@ export function OnboardingLayout({
       {/* No title bar (plan `glass-main-window`): this strip drags the window. */}
       <div className="drag-strip" data-tauri-drag-region aria-hidden="true" />
 
-      <div className="content-surface flex min-h-0 flex-1 flex-col border-l-0">
+      <div className="onboarding-surface content-surface relative isolate flex min-h-0 flex-1 flex-col border-l-0">
+        <HomeScenery />
         {/* Close button, above the drag strip so it stays clickable, on the same line as the
             window buttons (`trafficLightPosition` y 24 in tauri.conf.json). */}
         <div className="relative z-50 h-9 flex-none">
@@ -76,12 +78,10 @@ export function OnboardingLayout({
           className="flex min-h-0 flex-1 flex-col overflow-y-auto px-8"
           data-testid="onboarding-step-area"
         >
-          <div className="my-auto w-full pt-3 pb-4" data-testid="onboarding-block">
-            <div className="pb-[22px] text-center">
+          <div className="onboarding-block my-auto w-full" data-testid="onboarding-block">
+            <div className="onboarding-heading text-center">
               {step === 0 && (
-                <div className="onboarding-koel">
-                  <KoelBird />
-                </div>
+                <img className="onboarding-app-icon" src={appIcon} alt="" width={64} height={64} />
               )}
               <h1 className="page-title">{title}</h1>
               {subtitle && <p className="page-subtitle">{subtitle}</p>}
@@ -92,7 +92,7 @@ export function OnboardingLayout({
           </div>
         </div>
 
-        <div className="flex flex-none items-center px-8 py-4">
+        <div className="onboarding-footer flex flex-none items-center px-8">
           <button
             type="button"
             onClick={onBack}

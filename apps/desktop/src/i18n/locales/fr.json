@@ -295,7 +295,7 @@
     "saveFailed": "Impossible d’enregistrer : {{error}}",
     "retry": "Réessayer",
     "steps": {
-      "welcome": "Bienvenue",
+      "welcome": "Bienvenue dans {{appName}}",
       "welcomeSub": "Autoriser le micro, les raccourcis et le collage",
       "microphone": "Entrée vocale",
       "microphoneSub": "Choisissez votre micro",

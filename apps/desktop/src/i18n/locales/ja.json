@@ -295,7 +295,7 @@
     "saveFailed": "保存できませんでした：{{error}}",
     "retry": "再試行",
     "steps": {
-      "welcome": "ようこそ",
+      "welcome": "{{appName}} へようこそ",
       "welcomeSub": "マイク・ショートカット・ペーストを許可",
       "microphone": "音声入力",
       "microphoneSub": "マイクを選択",

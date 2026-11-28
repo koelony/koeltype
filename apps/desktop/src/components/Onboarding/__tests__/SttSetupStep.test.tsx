@@ -139,12 +139,10 @@ describe('SttSetupStep', () => {
       expect(within(models).queryByText('Suggested for your languages')).not.toBeInTheDocument()
     })
 
-    it('below the card: the server link on the left and Skip for now on the right', async () => {
+    it('offers the server tab and retains Skip for now', async () => {
       const onSkip = await renderStep()
 
-      expect(
-        screen.getByRole('button', { name: 'Use your own server or API key…' }),
-      ).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: /Your server or API key/ })).toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: 'Skip for now' }))
       expect(onSkip).toHaveBeenCalledTimes(1)
     })
@@ -279,153 +277,129 @@ describe('SttSetupStep', () => {
     })
   })
 
-  describe('Your own server or API key (sheet)', () => {
-    it('with no saved presets opens straight on the form', async () => {
+  describe('Your server or API key tab', () => {
+    const serverTab = () => screen.getByRole('tab', { name: /Your server or API key/ })
+    const builtinTab = () => screen.getByRole('tab', { name: /Built-in/ })
+
+    const openServer = () => {
+      fireEvent.click(serverTab())
+      return within(screen.getByRole('tabpanel'))
+    }
+
+    it('opens the inline form with keyboard navigation and keeps its draft between tabs', async () => {
       await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-
-      const sheet = screen.getByRole('dialog', { name: 'Add your server or API key' })
-      expect(within(sheet).getByLabelText('Address')).toHaveAttribute(
-        'placeholder',
-        'https://api.openai.com/v1',
-      )
-      expect(within(sheet).getByLabelText('Model')).toHaveAttribute('placeholder', 'whisper-1')
-      expect(within(sheet).getByLabelText('API key')).toHaveAttribute('placeholder', 'Optional')
-      expect(within(sheet).getByLabelText('Name')).toHaveAttribute(
-        'placeholder',
-        'Filled in for you',
-      )
-      expect(within(sheet).queryByRole('button', { name: '← Saved presets' })).toBeNull()
-
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Learn more' }))
-      expect(openUrl).toHaveBeenCalledWith(GUIDE)
-
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Cancel' }))
+      builtinTab().focus()
+      fireEvent.keyDown(builtinTab(), { key: 'ArrowRight' })
+      expect(serverTab()).toHaveFocus()
+      expect(serverTab()).toHaveAttribute('aria-selected', 'true')
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    })
-
-    it('fills Name with the host until the user types one', async () => {
-      await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-      const sheet = screen.getByRole('dialog')
-      const address = within(sheet).getByLabelText('Address')
-      const name = within(sheet).getByLabelText('Name')
-
-      fireEvent.change(address, { target: { value: 'https://api.groq.com/openai/v1' } })
-      expect(name).toHaveValue('api.groq.com')
+      const address = screen.getByLabelText('Address')
+      expect(address).toHaveAttribute('placeholder', 'https://api.openai.com/v1')
+      expect(within(screen.getByRole('tabpanel')).getByLabelText('Model')).toHaveAttribute(
+        'placeholder',
+        'whisper-1',
+      )
       fireEvent.change(address, { target: { value: 'http://192.0.2.10:8000/v1' } })
-      expect(name).toHaveValue('192.0.2.10')
+      expect(screen.getByLabelText('Name')).toHaveValue('192.0.2.10')
 
-      fireEvent.change(name, { target: { value: 'My PC' } })
-      fireEvent.change(address, { target: { value: 'http://192.0.2.11:8000/v1' } })
-      expect(name).toHaveValue('My PC')
+      fireEvent.keyDown(serverTab(), { key: 'Home' })
+      expect(builtinTab()).toHaveFocus()
+      expect(within(card()).getByRole('button', { name: 'Set up' })).toBeVisible()
+      expect(openServer().getByLabelText('Address')).toHaveValue('http://192.0.2.10:8000/v1')
+      fireEvent.click(screen.getByRole('button', { name: 'Learn more' }))
+      expect(openUrl).toHaveBeenCalledWith(GUIDE)
     })
 
-    it('tests on the same line, then "Save and use" saves the preset ready and in use', async () => {
+    it('adds and uses a tested preset with its key', async () => {
       vi.mocked(tauri.testSpeechPreset).mockResolvedValue(1400)
       await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-      const sheet = screen.getByRole('dialog')
+      const panel = openServer()
 
-      const save = within(sheet).getByRole('button', { name: 'Save and use' })
-      expect(save).toBeDisabled()
-      fireEvent.change(within(sheet).getByLabelText('Address'), {
+      expect(panel.getByRole('button', { name: 'Save and use' })).toBeDisabled()
+      fireEvent.change(panel.getByLabelText('Address'), {
         target: { value: 'https://api.openai.com/v1' },
       })
-      fireEvent.change(within(sheet).getByLabelText('Model'), { target: { value: 'whisper-1' } })
-      fireEvent.change(within(sheet).getByLabelText('API key'), { target: { value: 'sk-test' } })
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Test' }))
-      expect(await within(sheet).findByText('Works · 1.4 s')).toBeInTheDocument()
+      fireEvent.change(panel.getByLabelText('Model'), { target: { value: 'whisper-1' } })
+      fireEvent.change(panel.getByLabelText('API key'), { target: { value: 'sk-test' } })
+      fireEvent.click(panel.getByRole('button', { name: 'Test' }))
+      expect(await panel.findByText('Works · 1.4 s')).toBeInTheDocument()
+      fireEvent.click(panel.getByRole('button', { name: 'Save and use' }))
 
-      fireEvent.click(save)
-      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+      await waitFor(() => expect(activePreset()?.model).toBe('whisper-1'))
       const active = activePreset()!
       expect(active).toMatchObject({
         name: 'api.openai.com',
         base_url: 'https://api.openai.com/v1',
-        model: 'whisper-1',
         kind: 'openai_compatible',
         builtin: false,
+        verified_at: expect.any(Number),
       })
-      expect(active.verified_at).toEqual(expect.any(Number))
       expect(tauri.setCredential).toHaveBeenCalledWith('stt', active.id, 'sk-test')
-      expect(tauri.updateConfig).toHaveBeenCalledWith(
-        expect.objectContaining({ active_speech_preset_id: active.id }),
-      )
       expect(screen.getByTestId('speech-using-server')).toHaveTextContent('Using “api.openai.com”.')
     })
 
-    it('a failing test shows why and saving keeps the preset not ready', async () => {
-      vi.mocked(tauri.testSpeechPreset).mockRejectedValue('HTTP 401 Unauthorized')
+    it('repairs a saved address in place without replacing its stored key', async () => {
+      const host = serverPreset('pc', 'Office speech', 'not a URL', 'whisper-1')
+      setPresets([installedBuiltin(), host], host.id)
+      vi.mocked(tauri.readCredential).mockResolvedValue('saved-key')
+      vi.mocked(tauri.testSpeechPreset).mockRejectedValueOnce('Invalid address')
+      vi.mocked(tauri.testSpeechPreset).mockResolvedValueOnce(600)
+
       await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-      const sheet = screen.getByRole('dialog')
-      fireEvent.change(within(sheet).getByLabelText('Address'), {
-        target: { value: 'https://api.openai.com/v1' },
-      })
-      fireEvent.change(within(sheet).getByLabelText('Model'), { target: { value: 'whisper-1' } })
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Test' }))
-      expect(await within(sheet).findByText('HTTP 401 Unauthorized')).toBeInTheDocument()
+      expect(serverTab()).toHaveAttribute('aria-selected', 'true')
+      const panel = within(screen.getByRole('tabpanel'))
+      const address = panel.getByLabelText('Address')
+      expect(address).toHaveValue('not a URL')
+      await waitFor(() => expect(panel.getByLabelText('API key')).toHaveValue('saved-key'))
+      fireEvent.click(panel.getByRole('button', { name: 'Test' }))
+      expect(await panel.findByText('Invalid address')).toBeInTheDocument()
 
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Save and use' }))
-      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-      expect(activePreset()?.verified_at).toBeNull()
+      fireEvent.change(address, { target: { value: 'http://192.0.2.10:8000/v1' } })
+      fireEvent.click(panel.getByRole('button', { name: 'Test' }))
+      expect(await panel.findByText('Works · 600 ms')).toBeInTheDocument()
+      expect(tauri.testSpeechPreset).toHaveBeenLastCalledWith(
+        expect.objectContaining({ id: host.id, base_url: 'http://192.0.2.10:8000/v1' }),
+        '',
+      )
+      fireEvent.click(panel.getByRole('button', { name: 'Save and use' }))
+      await waitFor(() => expect(activePreset()?.verified_at).toEqual(expect.any(Number)))
+      expect(activePreset()).toMatchObject({ id: host.id, base_url: 'http://192.0.2.10:8000/v1' })
+      expect(config().speech_presets).toHaveLength(2)
+      expect(tauri.setCredential).not.toHaveBeenCalled()
+
+      fireEvent.click(builtinTab())
+      fireEvent.click(within(card()).getByRole('button', { name: 'Use' }))
+      await waitFor(() => expect(activePreset()?.id).toBe('builtin-speech-this-mac'))
     })
 
-    describe('with two saved presets', () => {
-      const pc = serverPreset('pc', 'Speech server on my PC', 'http://192.0.2.10:8000/v1')
+    it('lets the user pick another preset or start and cancel an addition without switching the active preset', async () => {
+      const pc = serverPreset('pc', 'PC', 'http://192.0.2.10:8000/v1')
       const groq = serverPreset('groq', 'Groq', 'https://api.groq.com/openai/v1')
+      setPresets([installedBuiltin(), pc, groq], pc.id)
+      await renderStep()
+      const panel = within(screen.getByRole('tabpanel'))
+      const picker = panel.getByRole('combobox', { name: 'Saved presets' })
+      fireEvent.change(picker, { target: { value: groq.id } })
+      expect(panel.getByLabelText('Address')).toHaveValue(groq.base_url)
+      expect(activePreset()?.id).toBe(pc.id)
 
-      beforeEach(() => {
-        setPresets([...BUILTIN_SPEECH_PRESETS.map((p) => ({ ...p })), pc, groq])
-      })
-
-      it('lists them first with name and host', async () => {
-        await renderStep()
-        fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-
-        const sheet = screen.getByRole('dialog', { name: 'Your own server or API key' })
-        const list = within(sheet).getByRole('group', { name: 'Saved presets' })
-        const rows = within(list).getAllByRole('button')
-        expect(rows.map((row) => row.textContent)).toEqual([
-          'Speech server on my PC192.0.2.10:8000',
-          'Groqapi.groq.com',
-        ])
-        expect(rows[0]).toHaveAttribute('aria-pressed', 'true')
-        expect(within(sheet).getByRole('button', { name: 'Test and use' })).toBeInTheDocument()
-        expect(within(sheet).queryByLabelText('Address')).not.toBeInTheDocument()
-      })
-
-      it('"Test and use" tests the chosen preset and makes it the one in use', async () => {
-        vi.mocked(tauri.testSpeechPreset).mockResolvedValue(600)
-        await renderStep()
-        fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-        const sheet = screen.getByRole('dialog')
-
-        fireEvent.click(within(sheet).getByRole('button', { name: /Groq/ }))
-        fireEvent.click(within(sheet).getByRole('button', { name: 'Test and use' }))
-
-        await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-        expect(tauri.testSpeechPreset).toHaveBeenCalledWith(
-          expect.objectContaining({ id: 'groq' }),
-          '',
-        )
-        expect(config().active_speech_preset_id).toBe('groq')
-        expect(activePreset()?.verified_at).toEqual(expect.any(Number))
-      })
-
-      it('"+ Add preset" opens the form with a way back to the list', async () => {
-        await renderStep()
-        fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-        fireEvent.click(screen.getByRole('button', { name: '+ Add preset' }))
-
-        const sheet = screen.getByRole('dialog', { name: 'Add preset' })
-        expect(within(sheet).getByLabelText('Address')).toHaveValue('')
-        fireEvent.click(within(sheet).getByRole('button', { name: '← Saved presets' }))
-        expect(
-          screen.getByRole('dialog', { name: 'Your own server or API key' }),
-        ).toBeInTheDocument()
-      })
+      fireEvent.change(picker, { target: { value: '__add__' } })
+      expect(panel.getByLabelText('Address')).toHaveValue('')
+      fireEvent.click(panel.getByRole('button', { name: '← Saved presets' }))
+      expect(panel.getByLabelText('Address')).toHaveValue(groq.base_url)
+      expect(tauri.updateConfig).not.toHaveBeenCalled()
     })
+  })
+
+  it('offers four models and passes the fourth choice to the same setup action', async () => {
+    vi.mocked(tauri.getSpeechHardware).mockResolvedValue(
+      hardwareCheck(['large-v3-turbo', 'small', 'qwen3-asr-1.7b', 'qwen3-asr-0.6b']),
+    )
+    await renderStep()
+    const radios = within(card()).getAllByRole('radio')
+    expect(radios).toHaveLength(4)
+    fireEvent.click(radios[3])
+    fireEvent.click(within(card()).getByRole('button', { name: 'Set up' }))
+    expect(tauri.startSpeechSetup).toHaveBeenCalledWith('qwen3-asr-0.6b')
   })
 })

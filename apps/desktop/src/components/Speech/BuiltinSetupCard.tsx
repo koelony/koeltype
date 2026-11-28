@@ -25,12 +25,17 @@ type CardState = 'none' | 'downloading' | 'ready' | 'failed'
 
 /**
  * Onboarding → Speech recognition and → AI polish, the Built-in card (plans `two-tab-speech` and
- * `ai-polish-setup`). It has one fixed height; every state fills the same two slots, a status area
- * and one action button at the bottom right: Not set up (model cards + hardware note, Set up),
+ * `ai-polish-setup`). Its height follows the model choices and status, with the actions below them: Not set up (model cards + hardware note, Set up),
  * Downloading (Cancel), Ready (Change model), Failed (Try again). When no model suits this Mac
  * there are no cards and no button, only the note.
  */
-export function BuiltinSetupCard({ service = SPEECH_SERVICE }: { service?: EngineService }) {
+export function BuiltinSetupCard({
+  service = SPEECH_SERVICE,
+  onUse,
+}: {
+  service?: EngineService
+  onUse?: () => void
+}) {
   const { t } = useTranslation()
   const status = useSetupStatus(service.store)
   const hardware = useSetupHardware(service.store)
@@ -67,7 +72,8 @@ export function BuiltinSetupCard({ service = SPEECH_SERVICE }: { service?: Engin
 
   return (
     <div
-      className={`setup-card ${offered.length > 2 ? 'setup-card-tall' : ''}`}
+      className="setup-card"
+      data-engine={service.id}
       aria-live="polite"
       data-testid="builtin-setup-card"
     >
@@ -172,6 +178,15 @@ export function BuiltinSetupCard({ service = SPEECH_SERVICE }: { service?: Engin
             className="btn-secondary px-3.5 py-1.5 text-[13px] font-medium"
           >
             {t('speechSetup.changeModel')}
+          </button>
+        )}
+        {state === 'ready' && onUse && (
+          <button
+            type="button"
+            onClick={onUse}
+            className="btn-accent px-3.5 py-1.5 text-[13px] font-medium"
+          >
+            {t('speechSetup.use')}
           </button>
         )}
         {state === 'failed' && (

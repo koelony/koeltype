@@ -55,7 +55,9 @@ export function ServerPresetForm({
     () => preset !== null && preset.name !== addressHostname(preset.base_url),
   )
   const [apiKey, setApiKey] = useState('')
-  const savedKey = useRef('')
+  const savedKey = useRef<string | null>(preset ? null : '')
+  const keyEdited = useRef(false)
+  const presetId = preset?.id
   const [test, setTest] = useState<TestState>({ status: 'idle' })
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -66,19 +68,18 @@ export function ServerPresetForm({
 
   useEffect(() => {
     let cancelled = false
-    savedKey.current = ''
-    if (!preset) return
-    readCredential(service.credential, preset.id)
+    if (!presetId) return
+    readCredential(service.credential, presetId)
       .then((secret) => {
-        if (cancelled) return
+        if (cancelled || savedKey.current !== null) return
         savedKey.current = secret ?? ''
-        setApiKey((typed) => typed || (secret ?? ''))
+        if (!keyEdited.current) setApiKey(savedKey.current)
       })
       .catch((error) => console.error(`[${service.id}] failed to read the API key`, error))
     return () => {
       cancelled = true
     }
-  }, [preset, service])
+  }, [presetId, service.credential, service.id])
 
   const change = (patch: Partial<AnyPreset>) => {
     setDraft((previous) => ({ ...previous, ...patch }) as AnyPreset)
@@ -106,8 +107,10 @@ export function ServerPresetForm({
     const tested = service.resolve(draft)
     setDraft(tested)
     try {
-      const ms = await service.test(tested, apiKey)
-      setTest({ status: 'ok', ms, tested, key: apiKey })
+      // The backend uses this preset's stored key when no override is supplied.
+      const key = keyEdited.current ? apiKey : ''
+      const ms = await service.test(tested, key)
+      setTest({ status: 'ok', ms, tested, key })
       service.recordResult(true)
     } catch (error) {
       setTest({
@@ -130,9 +133,14 @@ export function ServerPresetForm({
       addressHostname(resolved.base_url) ||
       resolved.model.trim() ||
       resolved.id
+    const keyChanged = keyEdited.current && apiKey !== savedKey.current
+    const key = keyEdited.current ? apiKey : ''
     const passed =
-      test.status === 'ok' && test.key === apiKey && service.sameConnection(test.tested, resolved)
-    const keyChanged = apiKey !== savedKey.current
+      test.status === 'ok' &&
+      test.key === key &&
+      // An empty override tests with the old stored key, so clearing it needs another Test.
+      !(keyChanged && !key) &&
+      service.sameConnection(test.tested, resolved)
     const unchanged = preset !== null && !keyChanged && service.sameConnection(preset, resolved)
     const saved = {
       ...resolved,
@@ -144,7 +152,7 @@ export function ServerPresetForm({
     setSaveError(null)
     try {
       await saveServerPreset(service, saved, { value: apiKey, changed: keyChanged })
-      savedKey.current = apiKey
+      if (keyChanged) savedKey.current = apiKey
       setDraft(saved)
       onSaved?.(saved)
     } catch (error) {
@@ -185,6 +193,7 @@ export function ServerPresetForm({
           type="password"
           value={apiKey}
           onChange={(event) => {
+            keyEdited.current = true
             setApiKey(event.target.value)
             setTest({ status: 'idle' })
           }}
