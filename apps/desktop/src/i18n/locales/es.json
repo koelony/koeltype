@@ -295,7 +295,7 @@
     "saveFailed": "No se pudo guardar: {{error}}",
     "retry": "Reintentar",
     "steps": {
-      "welcome": "Bienvenida",
+      "welcome": "Te damos la bienvenida a {{appName}}",
       "welcomeSub": "Permite micrófono, atajos y pegado",
       "microphone": "Entrada de voz",
       "microphoneSub": "Elige tu micrófono",
@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "Integrado",
     "recommended": "Recomendado",
-    "builtinBody": "Ejecuta un modelo de voz dentro de {{appName}} en este ordenador. No necesitas otro software.",
+    "builtinBody": "Transcribe en este equipo.",
+    "cantoneseModels": "Qwen3-ASR para cantonés de Hong Kong",
     "changeModel": "Cambiar modelo",
     "download": "Descargar",
     "use": "Usar",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "Usar tu propio servidor o clave de API…",
     "usingPreset": "Usando “{{name}}”.",
-    "sheetTitle": "Tu propio servidor o clave de API",
     "addTitle": "Añade tu servidor o clave de API",
-    "addPresetTitle": "Añadir preajuste",
-    "addPreset": "+ Añadir preajuste",
     "addPresetMenu": "+ Añadir preajuste…",
     "savedPresets": "Preajustes guardados",
     "backToSaved": "← Preajustes guardados",
     "cancel": "Cancelar",
-    "testAndUse": "Probar y usar",
     "learnMore": "Más información",
     "address": "Dirección",
     "model": "Modelo",
@@ -1191,7 +1187,7 @@
     "skipHint": "El dictado sigue funcionando; obtienes la transcripción sin pulir"
   },
   "aiSetup": {
-    "builtinBody": "Ejecuta un modelo abierto pequeño dentro de {{appName}} en este ordenador. No necesitas otro software.",
+    "builtinBody": "Pule el texto en este equipo.",
     "progressLabel": "Descarga del modelo de IA",
     "testing": "Iniciando el modelo y haciendo una prueba…",
     "models": {

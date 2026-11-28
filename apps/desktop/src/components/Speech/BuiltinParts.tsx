@@ -1,8 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import type { OfferedModel, SpeechSetupStatus } from '../../lib/tauri'
-import { progressPercent, setupKey } from '../../lib/speechSetup'
+import { formatSize, progressPercent, setupKey } from '../../lib/speechSetup'
 import { modelDetail, modelName } from './builtinText'
 import { SPEECH_SERVICE, type EngineService } from './services'
+
+const CANTONESE_VARIANTS: Partial<Record<string, string>> = {
+  'qwen3-asr-1.7b': '1.7B',
+  'qwen3-asr-0.6b': '0.6B',
+}
 
 /**
  * Plan `two-tab-speech`: the models this Mac runs well, as radio option cards. With one model there
@@ -16,42 +21,80 @@ export function ModelOptions({
   onSelect,
   service = SPEECH_SERVICE,
   suggested = null,
+  groupCantonese = false,
 }: {
   models: OfferedModel[]
   selected: string | null
   onSelect: (id: string) => void
   service?: EngineService
   suggested?: string | null
+  groupCantonese?: boolean
 }) {
   const { t } = useTranslation()
   const one = models.length === 1
   const tagged = suggested && models.some((model) => model.id === suggested) ? suggested : null
-  const layout = one ? 'option-cards-one' : models.length > 2 ? 'option-cards-list' : ''
-  return (
-    <div role="radiogroup" aria-label={t('speechSetup.model')} className={`option-cards ${layout}`}>
-      {models.map((model) => (
-        <button
-          key={model.id}
-          type="button"
-          role="radio"
-          aria-checked={model.id === selected}
-          onClick={() => {
-            if (!one) onSelect(model.id)
-          }}
-          className="option-card"
-        >
-          <span className="option-card-title">
-            {modelName(model.id, t, service)}
-            {tagged === model.id && <span className="tag">{t('languageSetup.suggestedTag')}</span>}
-            {!tagged && model.recommended && (
-              <span className="tag">{t('speechSetup.recommended')}</span>
-            )}
-          </span>
+  const cantonese = groupCantonese ? models.filter(({ id }) => CANTONESE_VARIANTS[id]) : []
+  const showFamily = cantonese.length > 1
+  const primary = showFamily ? models.filter(({ id }) => !CANTONESE_VARIANTS[id]) : models
+  const layout =
+    primary.length === 1 ? 'option-cards-one' : primary.length > 2 ? 'option-cards-list' : ''
+
+  const option = (model: OfferedModel, grouped = false) => {
+    const title = grouped ? CANTONESE_VARIANTS[model.id] : modelName(model.id, t, service)
+    const tag =
+      tagged === model.id
+        ? t('languageSetup.suggestedTag')
+        : !tagged && model.recommended
+          ? t('speechSetup.recommended')
+          : null
+
+    return (
+      <button
+        key={model.id}
+        type="button"
+        role="radio"
+        aria-checked={model.id === selected}
+        onClick={() => {
+          if (!one) onSelect(model.id)
+        }}
+        className="option-card"
+      >
+        <span className="option-card-title">
+          {title}
+          {grouped && (
+            <span className="option-card-detail">
+              <span aria-hidden="true">· </span>
+              {formatSize(model.sizeBytes)}
+            </span>
+          )}
+          {!grouped && tag && <span className="tag">{tag}</span>}
+        </span>
+        {grouped ? (
+          tag && <span className="tag">{tag}</span>
+        ) : (
           <span className="option-card-detail">
             {modelDetail(model.id, t, model.sizeBytes, service)}
           </span>
-        </button>
-      ))}
+        )}
+      </button>
+    )
+  }
+
+  return (
+    <div role="radiogroup" aria-label={t('speechSetup.model')} className={`option-cards ${layout}`}>
+      {primary.map((model) => option(model))}
+      {showFamily && (
+        <div
+          className="speech-model-family"
+          role="group"
+          aria-label={t('speechSetup.cantoneseModels')}
+        >
+          <span aria-hidden="true" className="option-card-title">
+            {t('speechSetup.cantoneseModels')}
+          </span>
+          <div className="option-cards">{cantonese.map((model) => option(model, true))}</div>
+        </div>
+      )}
     </div>
   )
 }

@@ -295,7 +295,7 @@
     "saveFailed": "Could not save: {{error}}",
     "retry": "Retry",
     "steps": {
-      "welcome": "Welcome",
+      "welcome": "Welcome to {{appName}}",
       "welcomeSub": "Allow microphone, shortcuts and paste",
       "microphone": "Voice input",
       "microphoneSub": "Choose your microphone",
@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "Built-in",
     "recommended": "Recommended",
-    "builtinBody": "Runs a speech model inside {{appName}} on this computer. No other software needed.",
+    "builtinBody": "Transcribes on this computer.",
+    "cantoneseModels": "Qwen3-ASR for Hong Kong Cantonese",
     "changeModel": "Change model",
     "download": "Download",
     "use": "Use",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "Use your own server or API key…",
     "usingPreset": "Using “{{name}}”.",
-    "sheetTitle": "Your own server or API key",
     "addTitle": "Add your server or API key",
-    "addPresetTitle": "Add preset",
-    "addPreset": "+ Add preset",
     "addPresetMenu": "+ Add preset…",
     "savedPresets": "Saved presets",
     "backToSaved": "← Saved presets",
     "cancel": "Cancel",
-    "testAndUse": "Test and use",
     "learnMore": "Learn more",
     "address": "Address",
     "model": "Model",
@@ -1191,7 +1187,7 @@
     "skipHint": "Dictation still works; you get the raw transcript"
   },
   "aiSetup": {
-    "builtinBody": "Runs a small open model inside {{appName}} on this computer. No other software needed.",
+    "builtinBody": "Polishes text on this computer.",
     "progressLabel": "AI model download",
     "testing": "Starting the model and running a test…",
     "models": {

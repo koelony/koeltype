@@ -76,6 +76,24 @@ describe('MainLayout', () => {
     expect(screen.getByText('Page content')).toBeInTheDocument()
   })
 
+  it('keeps a single scenery layer mounted across Home, Settings and Dictionary', () => {
+    const { container } = render(
+      <MainLayout>
+        <div>Page content</div>
+      </MainLayout>,
+    )
+    const scene = container.querySelector('.home-scenery')
+    expect(scene).toHaveAttribute('aria-hidden', 'true')
+    expect(scene?.querySelectorAll('.home-flock-lane')).toHaveLength(3)
+
+    for (const label of ['Settings', 'Dictionary', 'Home']) {
+      fireEvent.click(screen.getByRole('button', { name: label }))
+      act(() => window.dispatchEvent(new HashChangeEvent('hashchange')))
+      expect(container.querySelectorAll('.home-scenery')).toHaveLength(1)
+      expect(container.querySelector('.home-scenery')).toBe(scene)
+    }
+  })
+
   it('shows the active speech and AI presets with their last known status', () => {
     useAppStore.setState(useAppStore.getInitialState())
     const { config } = useAppStore.getState()

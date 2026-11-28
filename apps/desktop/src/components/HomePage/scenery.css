@@ -52,8 +52,8 @@
     opacity: 0.24;
   }
 
-  .home-scenery + .page-scroll {
-    --page-card-background: color-mix(in srgb, var(--koel-surface) 79%, transparent);
+  main.content-surface .home-scenery ~ div {
+    --page-card-background: color-mix(in srgb, var(--koel-surface) 86%, transparent);
   }
 
   .home-flock-lane {

@@ -295,7 +295,7 @@
     "saveFailed": "無法儲存：{{error}}",
     "retry": "重試",
     "steps": {
-      "welcome": "歡迎",
+      "welcome": "歡迎使用 {{appName}}",
       "welcomeSub": "允許麥克風、快捷鍵和貼上",
       "microphone": "語音輸入",
       "microphoneSub": "選擇你的麥克風",
@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "內建",
     "recommended": "推薦",
-    "builtinBody": "在這臺電腦上的 {{appName}} 裡執行語音模型。無需安裝其他軟體。",
+    "builtinBody": "在這部電腦上辨識語音。",
+    "cantoneseModels": "Qwen3-ASR 香港粵語",
     "changeModel": "更換模型",
     "download": "下載",
     "use": "使用",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "使用你自己的伺服器或 API 金鑰…",
     "usingPreset": "正在使用「{{name}}」。",
-    "sheetTitle": "你自己的伺服器或 API 金鑰",
     "addTitle": "新增你的伺服器或 API 金鑰",
-    "addPresetTitle": "新增預設",
-    "addPreset": "+ 新增預設",
     "addPresetMenu": "+ 新增預設…",
     "savedPresets": "已儲存的預設",
     "backToSaved": "← 已儲存的預設",
     "cancel": "取消",
-    "testAndUse": "測試並使用",
     "learnMore": "瞭解更多",
     "address": "地址",
     "model": "模型",
@@ -1191,7 +1187,7 @@
     "skipHint": "聽寫仍可使用，會貼上原始轉寫文字"
   },
   "aiSetup": {
-    "builtinBody": "在這臺電腦 上的 {{appName}} 裡執行一個小型開源模型。無需安裝其他軟體。",
+    "builtinBody": "在這部電腦上潤飾文字。",
     "progressLabel": "AI 模型下載",
     "testing": "正在啟動模型並測試…",
     "models": {

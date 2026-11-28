@@ -8,6 +8,7 @@ import { useAppStore } from '../../../stores/appStore'
 vi.mock('../../../lib/tauri')
 
 vi.mock('framer-motion', () => ({
+  useReducedMotion: () => false,
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   motion: {
     div: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -192,7 +193,7 @@ describe('Onboarding flow', () => {
     expect(layout()).toHaveAttribute('data-total-steps', '15')
 
     const expected = [
-      ['Welcome', 'Welcome step'],
+      ['Welcome to Munia', 'Welcome step'],
       ['Voice input', 'Microphone step'],
       ['Your languages', 'Languages step'],
       ['Speech recognition', 'Speech step'],

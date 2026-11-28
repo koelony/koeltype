@@ -3,8 +3,6 @@ import { forwardRef } from 'react'
 interface Props {
   title: React.ReactNode
   subtitle?: React.ReactNode
-  /** Decorative layer fixed behind the scrolling body. */
-  bodyDecoration?: React.ReactNode
   /** Shown under the title and stays put while the page scrolls (for example section tabs). */
   toolbar?: React.ReactNode
   children: React.ReactNode
@@ -14,7 +12,7 @@ interface Props {
 
 /** A main-window page: bold title, optional subtitle and tabs, then the scrolling body. */
 export const PageFrame = forwardRef<HTMLDivElement, Props>(function PageFrame(
-  { title, subtitle, bodyDecoration, toolbar, children, footer },
+  { title, subtitle, toolbar, children, footer },
   bodyRef,
 ) {
   return (
@@ -25,7 +23,6 @@ export const PageFrame = forwardRef<HTMLDivElement, Props>(function PageFrame(
         {toolbar && <div className="mt-3.5">{toolbar}</div>}
       </header>
       <div className="relative isolate min-h-0 flex-1">
-        {bodyDecoration}
         <div
           ref={bodyRef}
           className="page-scroll h-full overflow-x-hidden overflow-y-auto px-8 pb-8"

@@ -2,6 +2,7 @@ import type { ComponentProps } from 'react'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { invoke } from '@tauri-apps/api/core'
+import appIcon from '../../../../src-tauri/icons/app-icon.svg'
 import { OnboardingLayout } from '../OnboardingLayout'
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn().mockResolvedValue(undefined) }))
@@ -30,6 +31,21 @@ function props(overrides: Partial<ComponentProps<typeof OnboardingLayout>> = {})
 }
 
 describe('OnboardingLayout', () => {
+  it('shows the app icon at welcome and keeps the same scenery through the early steps', () => {
+    const { container, rerender } = render(
+      <OnboardingLayout {...props({ step: 0, title: 'Welcome to Munia' })} />,
+    )
+    const scenery = container.querySelector('.home-scenery')
+    expect(scenery).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('img.onboarding-app-icon')).toHaveAttribute('src', appIcon)
+
+    for (const step of [1, 2]) {
+      rerender(<OnboardingLayout {...props({ step })} />)
+      expect(container.querySelector('.home-scenery')).toBe(scenery)
+      expect(container.querySelector('.onboarding-app-icon')).not.toBeInTheDocument()
+    }
+  })
+
   it('renders the step and gates navigation with canNext and canBack', () => {
     const callbacks = props({ canNext: false, canBack: false })
     const { rerender } = render(<OnboardingLayout {...callbacks} />)
