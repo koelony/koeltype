@@ -1,4 +1,4 @@
-import { HomeFinch, HomeScenery } from './HomeScenery'
+import { HomeFinch } from './HomeScenery'
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Globe, Mic, MessageSquare, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -295,7 +295,6 @@ export function HomePage() {
         </div>
       }
       subtitle={t('home.subtitle')}
-      bodyDecoration={<HomeScenery />}
     >
       <UpdateBar />
       <FinishSetup />

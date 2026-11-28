@@ -10,6 +10,7 @@ import {
   type EndpointState,
 } from '../../lib/connectionStatus'
 import { MuniaMark } from '../../brand/KoelArtwork'
+import { HomeScenery } from '../HomePage/HomeScenery'
 import { AccessibilityBanner } from './AccessibilityBanner'
 
 interface NavItem {
@@ -155,7 +156,10 @@ export function MainLayout({ children }: Props) {
         {/* Keeps page content below the drag strip. */}
         <div className="h-7 flex-none" aria-hidden="true" />
         <AccessibilityBanner />
-        <div className="min-h-0 flex-1">{children}</div>
+        <div className="relative isolate min-h-0 flex-1">
+          {route !== 'about' && <HomeScenery />}
+          {children}
+        </div>
       </main>
     </div>
   )
