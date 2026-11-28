@@ -102,6 +102,7 @@ export function BuiltinSetupCard({
                 onSelect={setChoice}
                 service={service}
                 suggested={suggested}
+                groupCantonese={service.id === 'speech'}
               />
             )}
             <span className="hardware-note">

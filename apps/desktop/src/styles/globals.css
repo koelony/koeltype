@@ -948,12 +948,28 @@ body,
     background: var(--color-accent-light);
     box-shadow: 0 0 0 2px var(--color-accent);
   }
-  .option-cards-one .option-card {
+  .option-cards-one > .option-card {
     cursor: default;
   }
   .option-card:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+  .speech-model-family {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: 7px;
+    padding: 8px 10px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-content) 55%, transparent);
+  }
+  .speech-model-family .option-card {
+    gap: 0;
+    padding: 5px 8px;
+  }
+  .speech-model-family .option-card-title {
+    flex-wrap: wrap;
   }
   /* Plan `ai-polish-setup`: an engine this Mac cannot run ("Not available on this Mac"). */
   .option-card:disabled {

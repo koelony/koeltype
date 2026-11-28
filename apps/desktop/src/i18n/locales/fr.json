@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "Intégré",
     "recommended": "Recommandé",
-    "builtinBody": "Exécute un modèle vocal dans {{appName}} sur cet ordinateur. Aucun autre logiciel nécessaire.",
+    "builtinBody": "Transcrit sur cet ordinateur.",
+    "cantoneseModels": "Qwen3-ASR pour le cantonais de Hong Kong",
     "changeModel": "Changer de modèle",
     "download": "Télécharger",
     "use": "Utiliser",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "Utiliser votre propre serveur ou clé API…",
     "usingPreset": "Utilise « {{name}} ».",
-    "sheetTitle": "Votre propre serveur ou clé API",
     "addTitle": "Ajouter votre serveur ou clé API",
-    "addPresetTitle": "Ajouter un préréglage",
-    "addPreset": "+ Ajouter un préréglage",
     "addPresetMenu": "+ Ajouter un préréglage…",
     "savedPresets": "Préréglages enregistrés",
     "backToSaved": "← Préréglages enregistrés",
     "cancel": "Annuler",
-    "testAndUse": "Tester et utiliser",
     "learnMore": "En savoir plus",
     "address": "Adresse",
     "model": "Modèle",
@@ -1191,7 +1187,7 @@
     "skipHint": "La dictée fonctionne toujours ; vous obtenez la transcription brute"
   },
   "aiSetup": {
-    "builtinBody": "Exécute un petit modèle ouvert dans {{appName}} sur cet ordinateur. Aucun autre logiciel nécessaire.",
+    "builtinBody": "Reformule le texte sur cet ordinateur.",
     "progressLabel": "Téléchargement du modèle d’IA",
     "testing": "Démarrage du modèle et test en cours…",
     "models": {

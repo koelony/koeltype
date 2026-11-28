@@ -275,7 +275,7 @@ export function Onboarding() {
       onBack={handleBack}
       onSkip={page?.kind === 'exercise' && !exerciseDone ? handleSkip : undefined}
       onClose={tour ? handleCloseTour : undefined}
-      wideContent={step === SPEECH_STEP}
+      wideContent={step === SPEECH_STEP || step === AI_STEP}
     >
       <AnimatePresence mode="wait">
         <motion.div

@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "Integriert",
     "recommended": "Empfohlen",
-    "builtinBody": "Führt ein Sprachmodell in {{appName}} auf diesem Computer aus. Keine weitere Software nötig.",
+    "builtinBody": "Transkribiert auf diesem Computer.",
+    "cantoneseModels": "Qwen3-ASR für Hongkong-Kantonesisch",
     "changeModel": "Modell ändern",
     "download": "Laden",
     "use": "Verwenden",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "Eigenen Server oder API-Schlüssel verwenden…",
     "usingPreset": "„{{name}}“ wird verwendet.",
-    "sheetTitle": "Dein eigener Server oder API-Schlüssel",
     "addTitle": "Server oder API-Schlüssel hinzufügen",
-    "addPresetTitle": "Voreinstellung hinzufügen",
-    "addPreset": "+ Voreinstellung hinzufügen",
     "addPresetMenu": "+ Voreinstellung hinzufügen…",
     "savedPresets": "Gespeicherte Voreinstellungen",
     "backToSaved": "← Gespeicherte Voreinstellungen",
     "cancel": "Abbrechen",
-    "testAndUse": "Testen und verwenden",
     "learnMore": "Mehr erfahren",
     "address": "Adresse",
     "model": "Modell",
@@ -1191,7 +1187,7 @@
     "skipHint": "Diktieren funktioniert weiterhin; du bekommst das rohe Transkript"
   },
   "aiSetup": {
-    "builtinBody": "Führt ein kleines offenes Modell in {{appName}} auf diesem Computer aus. Keine weitere Software nötig.",
+    "builtinBody": "Überarbeitet Text auf diesem Computer.",
     "progressLabel": "Download des KI-Modells",
     "testing": "Modell wird gestartet und getestet…",
     "models": {

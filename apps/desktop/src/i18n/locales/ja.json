@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "内蔵",
     "recommended": "推奨",
-    "builtinBody": "このコンピュータ上で {{appName}} 内の音声モデルを実行します。他のソフトウェアは不要です。",
+    "builtinBody": "このコンピューターで文字起こしします。",
+    "cantoneseModels": "香港広東語向け Qwen3-ASR",
     "changeModel": "モデルを変更",
     "download": "ダウンロード",
     "use": "使う",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "自分のサーバまたは API キーを使う…",
     "usingPreset": "「{{name}}」を使用中。",
-    "sheetTitle": "自分のサーバまたは API キー",
     "addTitle": "サーバまたは API キーを追加",
-    "addPresetTitle": "プリセットを追加",
-    "addPreset": "+ プリセットを追加",
     "addPresetMenu": "+ プリセットを追加…",
     "savedPresets": "保存済みプリセット",
     "backToSaved": "← 保存済みプリセット",
     "cancel": "キャンセル",
-    "testAndUse": "テストして使う",
     "learnMore": "詳しく見る",
     "address": "アドレス",
     "model": "モデル",
@@ -1191,7 +1187,7 @@
     "skipHint": "音声入力は引き続き使え、文字起こしがそのまま出力されます"
   },
   "aiSetup": {
-    "builtinBody": "このコンピュータ上で {{appName}} 内の小さなオープンモデルを実行します。他のソフトウェアは不要です。",
+    "builtinBody": "このコンピューターで文章を整えます。",
     "progressLabel": "AI モデルのダウンロード",
     "testing": "モデルを起動してテスト中…",
     "models": {

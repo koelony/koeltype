@@ -1079,7 +1079,8 @@
     },
     "builtinTitle": "内置",
     "recommended": "推荐",
-    "builtinBody": "在这台电脑上的 {{appName}} 里运行语音模型。无需安装其他软件。",
+    "builtinBody": "在这台电脑上转录语音。",
+    "cantoneseModels": "Qwen3-ASR 香港粤语",
     "changeModel": "更换模型",
     "download": "下载",
     "use": "使用",
@@ -1125,17 +1126,12 @@
     }
   },
   "speech": {
-    "useOwnServer": "使用你自己的服务器或 API 密钥…",
     "usingPreset": "正在使用“{{name}}”。",
-    "sheetTitle": "你自己的服务器或 API 密钥",
     "addTitle": "添加你的服务器或 API 密钥",
-    "addPresetTitle": "添加预设",
-    "addPreset": "+ 添加预设",
     "addPresetMenu": "+ 添加预设…",
     "savedPresets": "已保存的预设",
     "backToSaved": "← 已保存的预设",
     "cancel": "取消",
-    "testAndUse": "测试并使用",
     "learnMore": "了解更多",
     "address": "地址",
     "model": "模型",
@@ -1191,7 +1187,7 @@
     "skipHint": "听写仍可使用，会粘贴原始转写文字"
   },
   "aiSetup": {
-    "builtinBody": "在这台电脑 上的 {{appName}} 里运行一个小型开源模型。无需安装其他软件。",
+    "builtinBody": "在这台电脑上润色文字。",
     "progressLabel": "AI 模型下载",
     "testing": "正在启动模型并测试…",
     "models": {

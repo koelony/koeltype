@@ -85,11 +85,7 @@ describe('LlmSetupStep', () => {
     it('not set up: the two Qwen models, the hardware note and Set up', async () => {
       await renderStep()
 
-      expect(
-        within(card()).getByText(
-          'Runs a small open model inside Munia on this computer. No other software needed.',
-        ),
-      ).toBeInTheDocument()
+      expect(within(card()).getByText('Polishes text on this computer.')).toBeInTheDocument()
       const models = within(card()).getByRole('radiogroup', { name: 'Model' })
       const best = within(models).getByRole('radio', { name: /Best quality/ })
       expect(best).toHaveAttribute('aria-checked', 'true')
@@ -149,9 +145,7 @@ describe('LlmSetupStep', () => {
       expect(within(card()).queryByText('Recommended')).not.toBeInTheDocument()
       expect(cardButtons()).toEqual([])
       // The server option is still there.
-      expect(
-        screen.getByRole('button', { name: 'Use your own server or API key…' }),
-      ).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: 'Your server or API key' })).toBeInTheDocument()
     })
 
     it('a build without llama-server says so and offers no setup', async () => {
@@ -243,12 +237,12 @@ describe('LlmSetupStep', () => {
     })
   })
 
-  describe('Your own server or API key (sheet)', () => {
+  describe('Your server or API key tab', () => {
     it('opens on the AI form: OpenAI placeholders, Learn more to the AI guide, Advanced', async () => {
       await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
+      fireEvent.click(screen.getByRole('tab', { name: 'Your server or API key' }))
 
-      const sheet = screen.getByRole('dialog', { name: 'Add your server or API key' })
+      const sheet = screen.getByRole('tabpanel', { name: 'Your server or API key' })
       expect(within(sheet).getByLabelText('Address')).toHaveAttribute(
         'placeholder',
         'https://api.openai.com/v1',
@@ -261,15 +255,15 @@ describe('LlmSetupStep', () => {
         '{"reasoning_effort": "none"}',
       )
 
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Learn more' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Learn more' }))
       expect(openUrl).toHaveBeenCalledWith(GUIDE)
     })
 
     it('tests and saves an AI preset with extra fields, ready and in use', async () => {
       vi.mocked(tauri.testAiPreset).mockResolvedValue(200)
       await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
-      const sheet = screen.getByRole('dialog')
+      fireEvent.click(screen.getByRole('tab', { name: 'Your server or API key' }))
+      const sheet = screen.getByRole('tabpanel', { name: 'Your server or API key' })
 
       fireEvent.change(within(sheet).getByLabelText('Address'), {
         target: { value: 'http://192.0.2.10:11434/v1' },
@@ -291,7 +285,7 @@ describe('LlmSetupStep', () => {
       )
 
       fireEvent.click(within(sheet).getByRole('button', { name: 'Save and use' }))
-      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+      await waitFor(() => expect(activePreset()?.base_url).toBe('http://192.0.2.10:11434/v1'))
       expect(activePreset()).toMatchObject({
         name: '192.0.2.10',
         kind: 'openai_compatible',
@@ -306,22 +300,32 @@ describe('LlmSetupStep', () => {
       expect(screen.getByTestId('ai-using-server')).toHaveTextContent('Using “192.0.2.10”.')
     })
 
-    it('lists saved presets and "Test and use" makes one the preset in use', async () => {
-      const pc = aiServerPreset('pc', 'Ollama on my PC', 'http://192.0.2.10:11434/v1')
-      setPresets([installedAiBuiltin('qwen3-4b', null), pc])
+    it('edits a saved AI preset in place and tests it with its stored key', async () => {
+      const pc = aiServerPreset('pc', 'Ollama on my PC', 'not a URL')
+      setPresets([installedAiBuiltin('qwen3-4b'), pc], pc.id)
+      vi.mocked(tauri.readCredential).mockResolvedValue('stored-key')
       vi.mocked(tauri.testAiPreset).mockResolvedValue(150)
       await renderStep()
-      fireEvent.click(screen.getByRole('button', { name: 'Use your own server or API key…' }))
 
-      const sheet = screen.getByRole('dialog', { name: 'Your own server or API key' })
-      expect(within(sheet).getByRole('button', { name: /Ollama on my PC/ })).toHaveTextContent(
-        '192.0.2.10:11434',
+      const panel = within(screen.getByRole('tabpanel', { name: 'Your server or API key' }))
+      expect(panel.getByRole('combobox', { name: 'Saved presets' })).toHaveValue('pc')
+      expect(panel.getByLabelText('Address')).toHaveValue('not a URL')
+      await waitFor(() => expect(panel.getByLabelText('API key')).toHaveValue('stored-key'))
+      fireEvent.change(panel.getByLabelText('Address'), {
+        target: { value: 'http://192.0.2.10:11434/v1' },
+      })
+      fireEvent.click(panel.getByRole('button', { name: 'Test' }))
+      expect(await panel.findByText('Works · 150 ms')).toBeInTheDocument()
+      expect(tauri.testAiPreset).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'pc', base_url: 'http://192.0.2.10:11434/v1' }),
+        '',
       )
-      fireEvent.click(within(sheet).getByRole('button', { name: 'Test and use' }))
-      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-      expect(tauri.testAiPreset).toHaveBeenCalledWith(pc, '')
-      expect(config().active_ai_preset_id).toBe('pc')
-      expect(activePreset()?.verified_at).toEqual(expect.any(Number))
+
+      fireEvent.click(panel.getByRole('button', { name: 'Save and use' }))
+      await waitFor(() => expect(activePreset()?.verified_at).toEqual(expect.any(Number)))
+      expect(activePreset()).toMatchObject({ id: 'pc', base_url: 'http://192.0.2.10:11434/v1' })
+      expect(config().ai_presets).toHaveLength(2)
+      expect(tauri.setCredential).not.toHaveBeenCalled()
     })
   })
 

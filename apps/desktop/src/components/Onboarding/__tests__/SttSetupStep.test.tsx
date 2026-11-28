@@ -80,11 +80,7 @@ describe('SttSetupStep', () => {
 
       expect(within(card()).getByText('Built-in')).toBeInTheDocument()
       expect(within(card()).getAllByText('Recommended').length).toBeGreaterThan(0)
-      expect(
-        within(card()).getByText(
-          'Runs a speech model inside Munia on this computer. No other software needed.',
-        ),
-      ).toBeInTheDocument()
+      expect(within(card()).getByText('Transcribes on this computer.')).toBeInTheDocument()
       const models = within(card()).getByRole('radiogroup', { name: 'Model' })
       expect(within(models).getByRole('radio', { name: /Best accuracy/ })).toHaveAttribute(
         'aria-checked',
@@ -396,9 +392,13 @@ describe('SttSetupStep', () => {
       hardwareCheck(['large-v3-turbo', 'small', 'qwen3-asr-1.7b', 'qwen3-asr-0.6b']),
     )
     await renderStep()
-    const radios = within(card()).getAllByRole('radio')
-    expect(radios).toHaveLength(4)
-    fireEvent.click(radios[3])
+    const models = within(card()).getByRole('radiogroup', { name: 'Model' })
+    expect(within(models).getAllByRole('radio')).toHaveLength(4)
+    expect(within(models).getByRole('radio', { name: /Best accuracy/ })).toBeVisible()
+    expect(within(models).getByRole('radio', { name: /Faster/ })).toBeVisible()
+    const family = within(models).getByRole('group', { name: 'Qwen3-ASR for Hong Kong Cantonese' })
+    expect(within(family).getByRole('radio', { name: /^1\.7B/ })).toBeVisible()
+    fireEvent.click(within(family).getByRole('radio', { name: /^0\.6B/ }))
     fireEvent.click(within(card()).getByRole('button', { name: 'Set up' }))
     expect(tauri.startSpeechSetup).toHaveBeenCalledWith('qwen3-asr-0.6b')
   })
