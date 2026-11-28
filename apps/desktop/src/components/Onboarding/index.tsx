@@ -262,6 +262,8 @@ export function Onboarding() {
       ? t('onboarding.layout.tryIt')
       : t('onboarding.layout.next')
 
+  const engineStep = step === SPEECH_STEP || step === AI_STEP
+
   return (
     <OnboardingLayout
       step={step}
@@ -275,11 +277,12 @@ export function Onboarding() {
       onBack={handleBack}
       onSkip={page?.kind === 'exercise' && !exerciseDone ? handleSkip : undefined}
       onClose={tour ? handleCloseTour : undefined}
-      wideContent={step === SPEECH_STEP || step === AI_STEP}
+      engineStep={engineStep}
     >
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
+          className={engineStep ? 'flex min-h-0 flex-1 flex-col' : undefined}
           variants={slideRight}
           initial={reducedMotion ? false : 'initial'}
           animate="animate"

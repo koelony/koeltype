@@ -289,7 +289,10 @@ describe('SttSetupStep', () => {
       expect(serverTab()).toHaveFocus()
       expect(serverTab()).toHaveAttribute('aria-selected', 'true')
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-      const address = screen.getByLabelText('Address')
+      const panel = screen.getByRole('tabpanel')
+      expect(panel).toHaveAttribute('tabindex', '0')
+      expect(panel.id).toBe(serverTab().getAttribute('aria-controls'))
+      const address = within(panel).getByLabelText('Address')
       expect(address).toHaveAttribute('placeholder', 'https://api.openai.com/v1')
       expect(within(screen.getByRole('tabpanel')).getByLabelText('Model')).toHaveAttribute(
         'placeholder',
@@ -301,7 +304,9 @@ describe('SttSetupStep', () => {
       fireEvent.keyDown(serverTab(), { key: 'Home' })
       expect(builtinTab()).toHaveFocus()
       expect(within(card()).getByRole('button', { name: 'Set up' })).toBeVisible()
-      expect(openServer().getByLabelText('Address')).toHaveValue('http://192.0.2.10:8000/v1')
+      expect(panel).toHaveAttribute('hidden')
+      expect(openServer().getByLabelText('Address')).toBe(address)
+      expect(address).toHaveValue('http://192.0.2.10:8000/v1')
       fireEvent.click(screen.getByRole('button', { name: 'Learn more' }))
       expect(openUrl).toHaveBeenCalledWith(GUIDE)
     })

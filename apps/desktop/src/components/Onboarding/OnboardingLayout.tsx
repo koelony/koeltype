@@ -18,8 +18,8 @@ interface Props {
   onSkip?: () => void
   /** Replaces the default close action (quit the app), for example to return to Home. */
   onClose?: () => void
-  /** A wider step area (the speech step's Built-in card, plan `two-tab-speech`). */
-  wideContent?: boolean
+  /** Give Speech and AI their own scrolling tab panels. */
+  engineStep?: boolean
   children: React.ReactNode
 }
 
@@ -35,7 +35,7 @@ export function OnboardingLayout({
   onBack,
   onSkip,
   onClose,
-  wideContent = false,
+  engineStep = false,
   children,
 }: Props) {
   const { t } = useTranslation()
@@ -78,15 +78,20 @@ export function OnboardingLayout({
           className="flex min-h-0 flex-1 flex-col overflow-y-auto px-8"
           data-testid="onboarding-step-area"
         >
-          <div className="onboarding-block my-auto w-full" data-testid="onboarding-block">
-            <div className="onboarding-heading text-center">
+          <div
+            className={`onboarding-block my-auto w-full ${engineStep ? 'onboarding-engine-block' : ''}`}
+            data-testid="onboarding-block"
+          >
+            <div className="onboarding-heading shrink-0 text-center">
               {step === 0 && (
                 <img className="onboarding-app-icon" src={appIcon} alt="" width={64} height={64} />
               )}
               <h1 className="page-title">{title}</h1>
               {subtitle && <p className="page-subtitle">{subtitle}</p>}
             </div>
-            <div className={`mx-auto w-full ${wideContent ? 'max-w-[480px]' : 'max-w-[400px]'}`}>
+            <div
+              className={`mx-auto w-full ${engineStep ? 'flex min-h-0 max-w-[480px] flex-1 flex-col' : 'max-w-[400px]'}`}
+            >
               {children}
             </div>
           </div>

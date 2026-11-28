@@ -42,7 +42,7 @@ export function EngineSetupStep({
   const panelId = (value: EngineTab) => `${id}-${value}-panel`
 
   return (
-    <div>
+    <div className="onboarding-engine">
       <div
         role="tablist"
         aria-label={t(`${service.textNs}.engineLabel`)}
@@ -75,29 +75,34 @@ export function EngineSetupStep({
           </button>
         ))}
       </div>
-      <div
-        role="tabpanel"
-        id={panelId('builtin')}
-        aria-labelledby={tabId('builtin')}
-        hidden={tab !== 'builtin'}
-        className="mt-3"
-      >
-        <BuiltinSetupCard service={service} onUse={usingServer ? useBuiltin : undefined} />
-        {error && (
-          <p role="alert" className="mt-2 text-[12px] text-error">
-            {error}
-          </p>
-        )}
+      <div className="min-h-0">
+        <div
+          role="tabpanel"
+          tabIndex={0}
+          className="onboarding-engine-panel"
+          id={panelId('builtin')}
+          aria-labelledby={tabId('builtin')}
+          hidden={tab !== 'builtin'}
+        >
+          <BuiltinSetupCard service={service} onUse={usingServer ? useBuiltin : undefined} />
+          {error && (
+            <p role="alert" className="mt-2 text-[12px] text-error">
+              {error}
+            </p>
+          )}
+        </div>
+        <div
+          role="tabpanel"
+          tabIndex={0}
+          className="onboarding-engine-panel"
+          id={panelId('server')}
+          aria-labelledby={tabId('server')}
+          hidden={tab !== 'server'}
+        >
+          {serverVisited && <ServerSettings service={service} onboarding />}
+        </div>
       </div>
-      <div
-        role="tabpanel"
-        id={panelId('server')}
-        aria-labelledby={tabId('server')}
-        hidden={tab !== 'server'}
-      >
-        {serverVisited && <ServerSettings service={service} onboarding />}
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <LearnMoreLink url={service.guideUrl} />
         {usingServer && active?.verified_at && (
           <p className="status-detail m-0" data-testid={`${service.textNs}-using-server`}>
