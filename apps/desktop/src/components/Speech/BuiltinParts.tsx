@@ -39,29 +39,46 @@ export function ModelOptions({
   const layout =
     primary.length === 1 ? 'option-cards-one' : primary.length > 2 ? 'option-cards-list' : ''
 
-  const option = (model: OfferedModel, grouped = false) => (
-    <button
-      key={model.id}
-      type="button"
-      role="radio"
-      aria-checked={model.id === selected}
-      onClick={() => {
-        if (!one) onSelect(model.id)
-      }}
-      className="option-card"
-    >
-      <span className="option-card-title">
-        {grouped ? CANTONESE_VARIANTS[model.id] : modelName(model.id, t, service)}
-        {tagged === model.id && <span className="tag">{t('languageSetup.suggestedTag')}</span>}
-        {!tagged && model.recommended && (
-          <span className="tag">{t('speechSetup.recommended')}</span>
+  const option = (model: OfferedModel, grouped = false) => {
+    const title = grouped ? CANTONESE_VARIANTS[model.id] : modelName(model.id, t, service)
+    const tag =
+      tagged === model.id
+        ? t('languageSetup.suggestedTag')
+        : !tagged && model.recommended
+          ? t('speechSetup.recommended')
+          : null
+
+    return (
+      <button
+        key={model.id}
+        type="button"
+        role="radio"
+        aria-checked={model.id === selected}
+        onClick={() => {
+          if (!one) onSelect(model.id)
+        }}
+        className="option-card"
+      >
+        <span className="option-card-title">
+          {title}
+          {grouped && (
+            <span className="option-card-detail">
+              <span aria-hidden="true">· </span>
+              {formatSize(model.sizeBytes)}
+            </span>
+          )}
+          {!grouped && tag && <span className="tag">{tag}</span>}
+        </span>
+        {grouped ? (
+          tag && <span className="tag">{tag}</span>
+        ) : (
+          <span className="option-card-detail">
+            {modelDetail(model.id, t, model.sizeBytes, service)}
+          </span>
         )}
-      </span>
-      <span className="option-card-detail">
-        {grouped ? formatSize(model.sizeBytes) : modelDetail(model.id, t, model.sizeBytes, service)}
-      </span>
-    </button>
-  )
+      </button>
+    )
+  }
 
   return (
     <div role="radiogroup" aria-label={t('speechSetup.model')} className={`option-cards ${layout}`}>

@@ -391,13 +391,17 @@ describe('SttSetupStep', () => {
     vi.mocked(tauri.getSpeechHardware).mockResolvedValue(
       hardwareCheck(['large-v3-turbo', 'small', 'qwen3-asr-1.7b', 'qwen3-asr-0.6b']),
     )
+    useAppStore.getState().setConfig({ ...config(), your_languages: ['en', 'zh-Hant-HK'] })
     await renderStep()
     const models = within(card()).getByRole('radiogroup', { name: 'Model' })
     expect(within(models).getAllByRole('radio')).toHaveLength(4)
     expect(within(models).getByRole('radio', { name: /Best accuracy/ })).toBeVisible()
     expect(within(models).getByRole('radio', { name: /Faster/ })).toBeVisible()
     const family = within(models).getByRole('group', { name: 'Qwen3-ASR for Hong Kong Cantonese' })
-    expect(within(family).getByRole('radio', { name: /^1\.7B/ })).toBeVisible()
+    const largerModel = within(family).getByRole('radio', {
+      name: /^1\.7B\s+1\.8 GB\s+Suggested/,
+    })
+    expect(within(largerModel).getByText('Suggested for your languages')).toBeVisible()
     fireEvent.click(within(family).getByRole('radio', { name: /^0\.6B/ }))
     fireEvent.click(within(card()).getByRole('button', { name: 'Set up' }))
     expect(tauri.startSpeechSetup).toHaveBeenCalledWith('qwen3-asr-0.6b')

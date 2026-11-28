@@ -965,11 +965,17 @@ body,
     background: color-mix(in srgb, var(--color-content) 55%, transparent);
   }
   .speech-model-family .option-card {
-    gap: 0;
+    align-items: flex-start;
+    gap: 4px;
     padding: 5px 8px;
   }
-  .speech-model-family .option-card-title {
-    flex-wrap: wrap;
+  .speech-model-family .option-card-detail {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .speech-model-family .option-card > .tag {
+    max-width: 100%;
+    white-space: normal;
   }
   /* Plan `ai-polish-setup`: an engine this Mac cannot run ("Not available on this Mac"). */
   .option-card:disabled {
