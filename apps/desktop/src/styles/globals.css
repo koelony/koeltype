@@ -744,9 +744,6 @@ body,
     background: var(--color-bg-elevated);
     box-shadow: 0 0 0 0.5px var(--color-border);
   }
-  .setup-card[data-engine='ai'] {
-    min-height: 236px;
-  }
   @media (min-width: 640px) {
     .setup-card[data-engine='speech'] .option-cards-list {
       grid-template-columns: repeat(2, minmax(0, 1fr));
